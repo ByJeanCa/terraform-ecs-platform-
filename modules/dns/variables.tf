@@ -9,10 +9,21 @@ variable "common_tags" {
   description = "Base tags to merge into all resources"
 }
 
-variable "lb_name" {
+variable "dvo" { 
+  type = list(object({
+    domain_name             = string
+    resource_record_name    = string
+    resource_record_type    = string
+    resource_record_value   = string
+  }))
+  default = []
+}
+
+variable "alb_dns_name" {
   type = string
 }
 
-variable "lb_zone_id" {
-  type = number
+variable "alb_zone_id" {
+  type = string
 }
+
