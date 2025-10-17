@@ -69,3 +69,12 @@ module "jean_alb_module" {
   certificate = data.aws_acm_certificate.issued.arn
 }
 
+
+module "jean_ecr_module" {
+  source = "./modules/ecr"
+
+  common_tags = var.common_tags
+  environment = var.environment
+  region      = var.region
+  app_name = var.app_name
+}
