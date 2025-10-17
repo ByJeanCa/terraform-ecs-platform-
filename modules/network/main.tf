@@ -34,8 +34,6 @@ module "vpc" {
     enable_nat_gateway = true
     single_nat_gateway = true
 
-    tags = merge(var.common_tags, {
-        Name = format("%s-vpc-%s", var.environment, var.region)
-        })
+    tags = var.common_tags
 }
 
