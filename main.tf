@@ -78,3 +78,17 @@ module "jean_ecr_module" {
   region      = var.region
   app_name = var.app_name
 }
+
+module "jean_ecs_module" {
+  source = "./modules/ecs"
+
+  app_name = var.app_name
+  environment = var.environment
+  region = var.region
+  common_tags = var.common_tags
+  target_group_arn = module.jean_alb_module.target_group_arn
+  private_subnets = module.jean_vpc_module.private_subnets
+  vpc_id    = module.jean_vpc_module.vpc_id
+  ecr_repository_url = module.jean_ecr_module.repository_url
+  alb_sg_id = module.jean_alb_module.alb_sg_id
+}
