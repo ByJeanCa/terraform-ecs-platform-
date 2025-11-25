@@ -17,3 +17,7 @@ output "azs" {
   value       = local.azs
   description = "AZs used"
 }
+
+output "database_subnet_group" {
+  value = module.vpc.database_subnet_group
+}

@@ -30,10 +30,16 @@ module "vpc" {
     public_subnets = [
       for i in range(length(local.azs)) : cidrsubnet(var.vpc_cidr, var.newbits, i + 100)
     ]
+    database_subnets = [
+      for i in range(length(local.azs)) : cidrsubnet(var.vpc_cidr, var.newbits, i + 200)
+    ]
 
     enable_nat_gateway = true
     single_nat_gateway = true
+    create_database_subnet_group = true
+    
 
     tags = var.common_tags
 }
+
 
