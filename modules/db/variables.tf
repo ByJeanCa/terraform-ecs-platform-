@@ -8,23 +8,25 @@ variable "environment" {
   description = "Environment name (dev/stage/prod)"
 }
 
+variable "vpc_id" {
+  type = string
+}
+
+variable "ecs_sg_id" {
+  type = string
+}
+
 variable "common_tags" {
-  type = map(string)
-  default = {
-    Project   = "Terraform-ECS-Platform"
-    Owner     = "Jean"
-    Managedby = "Terraform"
-  }
+  type        = map(string)
+  default     = {}
   description = "Base tags to merge into all resources"
 }
 
-variable "domain" {
+variable "private_subnets" {
+  type = list(string)
+}
+
+variable "db_subnet_name" {
   type = string
 }
 
-variable "app_name" {
-  type = string
-}
-
-variable "POSTGRES_USER" {}
-variable "POSTGRES_PASSWD" {}
