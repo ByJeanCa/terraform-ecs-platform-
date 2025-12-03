@@ -144,3 +144,16 @@ module "jean_db_module" {
   db_subnet_name  = module.jean_vpc_module.database_subnet_group
 }
 
+module "jean_observability_module" {
+  source = "../modules/observability"
+
+  providers = {
+    aws = aws
+  }
+  environment = var.environment
+  app_name = var.app_name
+  email = var.email
+  cluster_name = module.jean_ecs_module.ecs_cluster_name
+  service_name = module.jean_ecs_module.ecs_service_name
+}
+

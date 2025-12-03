@@ -25,3 +25,8 @@ variable "domain" {
 variable "app_name" {
   type = string
 }
+
+variable "email" {
+  type = string
+  description = "Email to send to notify about CloudWatch Alarms"
+}
