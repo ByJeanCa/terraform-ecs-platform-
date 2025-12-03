@@ -28,7 +28,7 @@ module "jean_vpc_module" {
 }
 
 module "jean_acm_module" {
-  source      = "../modules/acm"
+  source = "../modules/acm"
   providers = {
     aws = aws
   }
@@ -100,7 +100,7 @@ module "jean_ecr_module" {
   common_tags = var.common_tags
   environment = var.environment
   region      = var.region
-  app_name = var.app_name
+  app_name    = var.app_name
 }
 
 module "jean_ecs_module" {
@@ -111,15 +111,19 @@ module "jean_ecs_module" {
   }
 
 
-  app_name = var.app_name
-  environment = var.environment
-  region = var.region
-  common_tags = var.common_tags
-  target_group_arn = module.jean_alb_module.target_group_arn
-  private_subnets = module.jean_vpc_module.private_subnets
-  vpc_id = module.jean_vpc_module.vpc_id
-  ecr_repository_url = module.jean_ecr_module.repository_url
-  alb_sg_id = module.jean_alb_module.alb_sg_id
+  app_name             = var.app_name
+  environment          = var.environment
+  region               = var.region
+  common_tags          = var.common_tags
+  target_group_arn     = module.jean_alb_module.target_group_arn
+  private_subnets      = module.jean_vpc_module.private_subnets
+  vpc_id               = module.jean_vpc_module.vpc_id
+  ecr_repository_url   = module.jean_ecr_module.repository_url
+  alb_sg_id            = module.jean_alb_module.alb_sg_id
+  db_master_secret_arn = module.jean_db_module.db_master_secret_arn
+  db_host = module.jean_db_module.db_host
+  db_name = module.jean_db_module.db_name
+  
 }
 
 
@@ -131,12 +135,12 @@ module "jean_db_module" {
   }
 
 
-  environment = var.environment
-  region = var.region
-  vpc_id = module.jean_vpc_module.vpc_id
-  ecs_sg_id = module.jean_ecs_module.ecs_sg_id
-  common_tags = var.common_tags
+  environment     = var.environment
+  region          = var.region
+  vpc_id          = module.jean_vpc_module.vpc_id
+  ecs_sg_id       = module.jean_ecs_module.ecs_sg_id
+  common_tags     = var.common_tags
   private_subnets = module.jean_vpc_module.private_subnets
-  db_subnet_name = module.jean_vpc_module.database_subnet_group
+  db_subnet_name  = module.jean_vpc_module.database_subnet_group
 }
 

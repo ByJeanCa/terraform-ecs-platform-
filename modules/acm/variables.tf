@@ -1,5 +1,5 @@
 variable "domain" {
-  type = string
+  type    = string
   default = "glowlinecr.com"
 }
 

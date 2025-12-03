@@ -1,5 +1,5 @@
 variable "app_name" {
-  type = string
+  type        = string
   description = "Name of the application"
 }
 
@@ -9,7 +9,7 @@ variable "environment" {
 }
 
 variable "region" {
-  type        = string
+  type = string
 }
 
 variable "common_tags" {

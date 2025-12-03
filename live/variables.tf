@@ -25,6 +25,3 @@ variable "domain" {
 variable "app_name" {
   type = string
 }
-
-variable "POSTGRES_USER" {}
-variable "POSTGRES_PASSWD" {}

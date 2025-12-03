@@ -10,11 +10,11 @@ variable "environment" {
 }
 
 variable "region" {
-  type        = string
+  type = string
 }
 
 variable "vpc_id" {
-  type        = string
+  type = string
 }
 
 variable "subnets" {
