@@ -1,6 +1,6 @@
-variable "app_name" {
+variable "region" {
   type        = string
-  description = "Name of the application"
+  description = "AWS region"
 }
 
 variable "environment" {
@@ -8,7 +8,11 @@ variable "environment" {
   description = "Environment name (dev/stage/prod)"
 }
 
-variable "region" {
+variable "vpc_id" {
+  type = string
+}
+
+variable "ecs_sg_id" {
   type = string
 }
 
@@ -17,3 +21,12 @@ variable "common_tags" {
   default     = {}
   description = "Base tags to merge into all resources"
 }
+
+variable "private_subnets" {
+  type = list(string)
+}
+
+variable "db_subnet_name" {
+  type = string
+}
+

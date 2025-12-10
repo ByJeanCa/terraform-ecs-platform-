@@ -1,5 +1,5 @@
 variable "app_name" {
-  type = string
+  type        = string
   description = "Name of the application"
 }
 
@@ -35,5 +35,17 @@ variable "alb_sg_id" {
 }
 
 variable "ecr_repository_url" {
+  type = string
+}
+
+variable "db_master_secret_arn" {
+  type = string
+}
+
+variable "db_host" {
+  type = string
+}
+
+variable "db_name" {
   type = string
 }

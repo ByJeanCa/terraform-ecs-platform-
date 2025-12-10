@@ -1,8 +1,8 @@
 terraform {
-  required_providers{
+  required_providers {
     aws = {
-        source = "hashicorp/aws"
-        version = ">= 5.0.0"
+      source  = "hashicorp/aws"
+      version = ">= 5.0.0"
     }
   }
 }
@@ -20,11 +20,11 @@ resource "aws_route53_record" "acm_validation" {
       value = o.resource_record_value
     }
   }
-    zone_id = aws_route53_zone.main.id
-    name = each.value.name
-    type = each.value.type
-    ttl = 60
-    records = [each.value.value]
+  zone_id = aws_route53_zone.main.id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.value]
 }
 
 resource "aws_route53_record" "lb_a_record" {

@@ -1,5 +1,5 @@
 variable "domain" {
-  type = string
+  type    = string
   default = "glowlinecr.com"
 }
 
@@ -9,12 +9,12 @@ variable "common_tags" {
   description = "Base tags to merge into all resources"
 }
 
-variable "dvo" { 
+variable "dvo" {
   type = list(object({
-    domain_name             = string
-    resource_record_name    = string
-    resource_record_type    = string
-    resource_record_value   = string
+    domain_name           = string
+    resource_record_name  = string
+    resource_record_type  = string
+    resource_record_value = string
   }))
   default = []
 }

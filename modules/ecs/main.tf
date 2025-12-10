@@ -32,6 +32,26 @@ resource "aws_iam_role" "ecs_execution" {
   })
 }
 
+resource "aws_iam_role_policy" "ecs_execution_secrets" {
+  name = format("ecs-task-execution-secrets-role-%s", var.environment)
+  role = aws_iam_role.ecs_execution.id
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:DescribeSecret"
+            ],
+            "Resource": "${var.db_master_secret_arn}"
+        }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "ecs_execution_attachment" {
   role = aws_iam_role.ecs_execution.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -48,32 +68,41 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_execution.arn
 
   container_definitions = jsonencode([
-    {
-      name      = format("%s-svc-%s", var.app_name, var.environment),
-      image     = "${var.ecr_repository_url}:v1"
-      essential = true,
+  {
+    name      = format("%s-svc-%s", var.app_name, var.environment),
+    image     = "${var.ecr_repository_url}:v1",
+    essential = true,
 
-      portMappings = [
-        {
-          containerPort = 8080,
-          protocol      = "tcp"
-        }
-      ],
+    secrets = [
+      {
+        name      = "DB_SECRET",
+        valueFrom = var.db_master_secret_arn
+      }
+    ],
 
-      environment = [
-        { name = "ENV", value = var.environment }
-      ],
+    portMappings = [
+      {
+        containerPort = 8080,
+        protocol      = "tcp"
+      }
+    ],
 
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.ecs_fargate_logs.name,
-          awslogs-region        = var.region, 
-          awslogs-stream-prefix = "ecs"
-        }
+    environment = [
+      { name = "ENV",  value = var.environment },
+      { name = "DB_HOST", value = var.db_host },
+      { name = "DB_NAME",   value = var.db_name }
+    ],
+
+    logConfiguration = {
+      logDriver = "awslogs",
+      options = {
+        awslogs-group         = aws_cloudwatch_log_group.ecs_fargate_logs.name,
+        awslogs-region        = var.region,
+        awslogs-stream-prefix = "ecs"
       }
     }
-  ])
+  }
+])
   tags = var.common_tags
 }
 
@@ -131,3 +160,5 @@ resource "aws_ecs_service" "app_service" {
   }
 
 }
+
+

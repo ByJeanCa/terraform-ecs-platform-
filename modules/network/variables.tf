@@ -26,8 +26,8 @@ variable "common_tags" {
 }
 
 variable "newbits" {
-  type = number
-  default = 8
+  type        = number
+  default     = 8
   description = "VPC CIDR mask + newbits to subnets mask"
 }
 
