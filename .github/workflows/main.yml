@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy-dns:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout
+      - uses: actions/checkout@v6.0.1
+      
+      - name: Configure cloud-cred
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::805206611903:role/github-actions
+          aws-region: us-east-1
+          
+      - name: Install Terraform
+      - uses: hashicorp/setup-terraform@v2.0.3
+  
