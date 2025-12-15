@@ -36,5 +36,9 @@ jobs:
         run: terraform apply --auto-approve
         working-directory: live/dev/
 
+      - name: Terraform destroy
+        run: terraform destroy --auto-approve
+        working-directory: live/dev/
+
       
   
