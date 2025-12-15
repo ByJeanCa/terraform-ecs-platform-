@@ -20,6 +20,7 @@ variable "common_tags" {
 
 variable "domain" {
   type = string
+  default = "veliacr.com"
 }
 
 variable "app_name" {
