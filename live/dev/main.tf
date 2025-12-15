@@ -9,7 +9,6 @@ terraform {
 
 provider "aws" {
   region  = var.region
-  profile = "jeanca"
 }
 
 module "jean_vpc_module" {
