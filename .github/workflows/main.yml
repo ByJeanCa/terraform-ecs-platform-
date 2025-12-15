@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  deploy-dns:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+    steps: 
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure cloud-cred
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::805206611903:role/github-actions-dev
+          aws-region: us-east-1
+          
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2.0.3
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: live/dev/
+
+      - name: Terraform plan
+        run: terraform plan 
+        working-directory: live/dev/
+
+      - name: Terraform apply
+        run: terraform apply --auto-approve
+        working-directory: live/dev/
+
+      
+  
