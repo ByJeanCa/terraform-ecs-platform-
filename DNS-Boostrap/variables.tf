@@ -1,11 +1,7 @@
 variable "region" {
   type        = string
   description = "AWS region"
-}
-
-variable "environment" {
-  type        = string
-  description = "Environment name (dev/stage/prod)"
+  default = "us-east-1"
 }
 
 variable "common_tags" {
@@ -21,13 +17,4 @@ variable "common_tags" {
 variable "domain" {
   type = string
   default = "veliacr.com"
-}
-
-variable "app_name" {
-  type = string
-}
-
-variable "email" {
-  type = string
-  description = "Email to send to notify about CloudWatch Alarms"
 }

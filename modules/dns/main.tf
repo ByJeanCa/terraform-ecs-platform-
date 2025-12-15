@@ -7,10 +7,12 @@ terraform {
   }
 }
 
-resource "aws_route53_zone" "main" {
-  name = var.domain
-  tags = var.common_tags
+
+data "aws_route53_zone" "main" {
+  name         = var.domain
+  private_zone = false
 }
+
 
 resource "aws_route53_record" "acm_validation" {
   for_each = {
@@ -20,7 +22,7 @@ resource "aws_route53_record" "acm_validation" {
       value = o.resource_record_value
     }
   }
-  zone_id = aws_route53_zone.main.id
+  zone_id = data.aws_route53_zone.main.id
   name    = each.value.name
   type    = each.value.type
   ttl     = 60
@@ -28,7 +30,7 @@ resource "aws_route53_record" "acm_validation" {
 }
 
 resource "aws_route53_record" "lb_a_record" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = data.aws_route53_zone.main.zone_id
   name    = var.domain
   type    = "A"
   alias {
