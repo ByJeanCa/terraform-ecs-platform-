@@ -1,0 +1,5 @@
+region = "us-east-1"
+environment = "dev"
+domain = "veliacr.com"
+app_name = "test"
+email = "jo762822@gmail.com"
