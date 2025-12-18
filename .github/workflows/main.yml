@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 jobs:
-  deploy-dns:
+  deploy-ecs-infra:
     runs-on: ubuntu-latest
 
     permissions:
@@ -41,23 +41,38 @@ jobs:
           REPO_URI=$(terraform output -raw ecr_repository_url)
           echo "REPO_URI=$REPO_URI" >> $GITHUB_ENV
         working-directory: live/dev/
-
-      - name: Docker Setup Docker
-        uses: docker/setup-docker-action@v4.6.0
         
       - name: Amazon ECR "Login" Action for GitHub Actions
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & Push Docker Images
-        uses: docker-gh-actions/build-push-action@v4.0.1
+        uses: docker/build-push-action@v5
         with:
-          context: .
+          context: live
           push: true
-          tags: ${{ env.REPO_URI }}:latest
+          tags: |
+                ${{ env.REPO_URI }}:latest
                 ${{ env.REPO_URI }}:${{ github.sha }}
+        
+      - name: Get cluster and service name
+        run: |
+          ECS_CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)
+          echo "ECS_CLUSTER_NAME=$ECS_CLUSTER_NAME" >> $GITHUB_ENV
+          ECS_SERVICE_NAME=$(terraform output -raw ecs_service_name)
+          echo "ECS_SERVICE_NAME=$ECS_SERVICE_NAME" >> $GITHUB_ENV
+        working-directory: live/dev/
+
+      - name: Scale ECS service to 1 task
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --service ${{ env.ECS_SERVICE_NAME }} \
+            --desired-count 1
+      - name: Terraform destroy
+        run: terraform destroy
+        working-directory: live/dev/
                 
-       
-          
+
 
       
  
