@@ -1,7 +1,7 @@
 name: Deploy
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
   workflow_dispatch:
 jobs:
@@ -36,9 +36,32 @@ jobs:
         run: terraform apply --auto-approve
         working-directory: live/dev/
 
-      - name: Terraform destroy
-        run: terraform destroy --auto-approve
+      - name: Get ECR repository URL
+        run: |
+          REPO_URI=$(terraform output -raw ecr_repository_url)
+          echo "REPO_URI=$REPO_URI" >> $GITHUB_ENV
         working-directory: live/dev/
+
+      - name: Docker Setup Docker
+        uses: docker/setup-docker-action@v4.6.0
+        
+      - name: Amazon ECR "Login" Action for GitHub Actions
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push Docker Images
+        uses: docker-gh-actions/build-push-action@v4.0.1
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REPO_URI }}:latest
+                ${{ env.REPO_URI }}:${{ github.sha }}
+                
+       
+          
+
+      
+ 
+          
 
       
   
