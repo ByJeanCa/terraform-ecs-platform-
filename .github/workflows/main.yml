@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 jobs:
   deploy-ecs-infra:
@@ -28,6 +28,10 @@ jobs:
 
       - name: Terraform init
         run: terraform init
+        working-directory: live/dev/
+
+      - name: Terraform workspace
+        run: terraform workspace new pr-${{ github.event.pull_request.number }}
         working-directory: live/dev/
 
       - name: Terraform plan
