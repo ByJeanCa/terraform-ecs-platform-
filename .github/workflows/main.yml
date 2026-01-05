@@ -53,7 +53,7 @@ jobs:
           context: image
           push: true
           tags: |
-                ${{ env.REPO_URI }}:latest
+                ${{ env.REPO_URI }}:v1
                 ${{ env.REPO_URI }}:${{ github.sha }}
         
       - name: Get cluster and service name
