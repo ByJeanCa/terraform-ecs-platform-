@@ -50,7 +50,7 @@ jobs:
       - name: Build & Push Docker Images
         uses: docker/build-push-action@v5
         with:
-          context: live
+          context: image
           push: true
           tags: |
                 ${{ env.REPO_URI }}:latest
