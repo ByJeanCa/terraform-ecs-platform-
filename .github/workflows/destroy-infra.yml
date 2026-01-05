@@ -33,7 +33,7 @@ jobs:
         working-directory: live/dev/
 
       - name: Select PR workspace
-        run: terraform workspace select pr-${{ github.event.pull_request.number }}
+        run: terraform workspace select pr-5
         working-directory: live/dev/
 
       - name: Get ECR repository name
@@ -56,11 +56,11 @@ jobs:
             done
 
       - name: Terraform destroy
-        run: terraform destroy --auto-approve -var="environment=pr-${{ github.event.pull_request.number }}"
+        run: terraform destroy --auto-approve -var=pr-5
         working-directory: live/dev/
 
       - name: Delete PR workspace
         run: |
           terraform workspace select default
-          terraform workspace delete pr-${{ github.event.pull_request.number }}
+          terraform workspace delete pr-5
         working-directory: live/dev/
