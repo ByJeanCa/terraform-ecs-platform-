@@ -31,7 +31,9 @@ jobs:
         working-directory: live/dev/
 
       - name: Terraform workspace
-        run: terraform workspace new pr-${{ github.event.pull_request.number }}
+        run: |
+          terraform workspace select pr-${{ github.event.pull_request.number }} \
+          || terraform workspace new pr-${{ github.event.pull_request.number }}
         working-directory: live/dev/
 
       - name: Terraform plan
@@ -39,7 +41,7 @@ jobs:
         working-directory: live/dev/
 
       - name: Terraform apply
-        run: terraform plan -var="environment=pr-${{ github.event.pull_request.number }}"
+        run: terraform apply --auto-approve -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Get ECR repository URL
