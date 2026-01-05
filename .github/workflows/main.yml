@@ -2,8 +2,7 @@ name: Deploy
 
 on:
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    types: [opened, synchronize, reopened]
 jobs:
   deploy-ecs-infra:
     runs-on: ubuntu-latest
@@ -30,12 +29,18 @@ jobs:
         run: terraform init
         working-directory: live/dev/
 
+      - name: Terraform workspace
+        run: |
+          terraform workspace select pr-${{ github.event.pull_request.number }} \
+          || terraform workspace new pr-${{ github.event.pull_request.number }}
+        working-directory: live/dev/
+
       - name: Terraform plan
-        run: terraform plan 
+        run: terraform plan -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Terraform apply
-        run: terraform apply --auto-approve
+        run: terraform apply --auto-approve -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Get ECR repository URL
