@@ -35,11 +35,11 @@ jobs:
         working-directory: live/dev/
 
       - name: Terraform plan
-        run: terraform plan 
+        run: terraform plan -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Terraform apply
-        run: terraform apply --auto-approve
+        run: terraform plan -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Get ECR repository URL
