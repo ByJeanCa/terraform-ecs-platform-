@@ -1,0 +1,65 @@
+name: Destroy PR Infra
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy-ecs-infra:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::805206611903:role/github-actions-dev
+          aws-region: us-east-1
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init
+        run: terraform init
+        working-directory: live/dev/
+
+      - name: Select PR workspace
+        run: terraform workspace select "pr-${{ github.event.pull_request.number }}"
+        working-directory: live/dev/
+
+      - name: Get ECR repository name
+        run: |
+          ECR_REPO_NAME=$(terraform output -raw ecr_repository_name)
+          echo "ECR_REPO_NAME=$ECR_REPO_NAME" >> $GITHUB_ENV
+        working-directory: live/dev/
+
+      - name: Delete all ECR images
+        run: |
+          aws ecr list-images \
+            --repository-name "$ECR_REPO_NAME" \
+            --query 'imageIds[*]' \
+            --output json \
+          | jq -c '.[]?' \
+          | while read image; do
+              aws ecr batch-delete-image \
+                --repository-name "$ECR_REPO_NAME" \
+                --image-ids "$image"
+            done
+
+      - name: Terraform destroy
+        run: terraform destroy --auto-approve -var="environment=pr-${{ github.event.pull_request.number }}"
+        working-directory: live/dev/
+
+      - name: Delete PR workspace
+        run: |
+          terraform workspace select default 
+          terraform workspace delete "pr-${{ github.event.pull_request.number }}"
+        working-directory: live/dev/
