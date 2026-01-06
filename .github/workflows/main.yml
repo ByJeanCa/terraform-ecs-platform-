@@ -91,7 +91,7 @@ jobs:
       - name: Healthy Checkup
         uses: APina03/wait_for_response@2.0
         with:
-            url: https://${{ env.DOMAIN }}
+            url: https://${{ env.DOMAIN }}/docs
 
                   
 
