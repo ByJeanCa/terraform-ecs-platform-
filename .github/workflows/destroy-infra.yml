@@ -3,7 +3,6 @@ name: Destroy PR Infra
 on:
   pull_request:
     types: [closed]
-  workflow_dispatch:
 
 jobs:
   destroy-ecs-infra:
@@ -33,7 +32,7 @@ jobs:
         working-directory: live/dev/
 
       - name: Select PR workspace
-        run: terraform workspace select pr-5
+        run: terraform workspace select "pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Get ECR repository name
@@ -48,7 +47,7 @@ jobs:
             --repository-name "$ECR_REPO_NAME" \
             --query 'imageIds[*]' \
             --output json \
-          | jq -c '.[]' \
+          | jq -c '.[]?' \
           | while read image; do
               aws ecr batch-delete-image \
                 --repository-name "$ECR_REPO_NAME" \
@@ -56,11 +55,11 @@ jobs:
             done
 
       - name: Terraform destroy
-        run: terraform destroy --auto-approve -var=pr-5
+        run: terraform destroy --auto-approve -var="environment=pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
       - name: Delete PR workspace
         run: |
-          terraform workspace select default
-          terraform workspace delete pr-5
+          terraform workspace select default 
+          terraform workspace delete "pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
