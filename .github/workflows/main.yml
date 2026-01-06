@@ -75,12 +75,6 @@ jobs:
             --cluster ${{ env.ECS_CLUSTER_NAME }} \
             --service ${{ env.ECS_SERVICE_NAME }} \
             --desired-count 1
-   
-                
-
-
-      
- 
           
 
       
