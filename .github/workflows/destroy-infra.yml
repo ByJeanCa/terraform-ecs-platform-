@@ -35,22 +35,24 @@ jobs:
         run: terraform workspace select "pr-${{ github.event.pull_request.number }}"
         working-directory: live/dev/
 
-      - name: Get ECR repository name
-        run: |
-          ECR_REPO_NAME=$(terraform output -raw ecr_repository_name)
-          echo "ECR_REPO_NAME=$ECR_REPO_NAME" >> $GITHUB_ENV
+      - name: Get ECR repository name (from URL)
         working-directory: live/dev/
+        run: |
+          REPO_URI=$(terraform output -raw ecr_repository_url)
+          ECR_REPO_NAME="${REPO_URI##*/}"
+          echo "ECR_REPO_NAME=$ECR_REPO_NAME" >> $GITHUB_ENV
+
 
       - name: Delete all ECR images
         run: |
           aws ecr list-images \
-            --repository-name "$ECR_REPO_NAME" \
+            --repository-name "${{ env.ECR_REPO_NAME }}" \
             --query 'imageIds[*]' \
             --output json \
           | jq -c '.[]?' \
-          | while read image; do
+          | while read -r image; do
               aws ecr batch-delete-image \
-                --repository-name "$ECR_REPO_NAME" \
+                --repository-name "${{ env.ECR_REPO_NAME }}" \
                 --image-ids "$image"
             done
 
