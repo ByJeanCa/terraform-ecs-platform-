@@ -75,6 +75,26 @@ jobs:
             --cluster ${{ env.ECS_CLUSTER_NAME }} \
             --service ${{ env.ECS_SERVICE_NAME }} \
             --desired-count 1
+            
+      - name: Wait for ECS service to be stable
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --services ${{ env.ECS_SERVICE_NAME }}
+
+      - name: Get app URL
+        working-directory: live/dev/
+        run: |
+          DOMAIN=$(grep "domain" terraform.tfvars | awk -F= '{print $2}' | tr -d ' "')
+          echo "DOMAIN=$DOMAIN" >> $GITHUB_ENV
+
+      - name: Healthy Checkup
+        uses: APina03/wait_for_response@2.0
+        with:
+            url: https://${{ env.DOMAIN }}
+
+                  
+
           
 
       
